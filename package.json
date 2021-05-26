@@ -1,0 +1,29 @@
+{
+  "name": "vue-js-node-js-express-firebase",
+  "version": "1.0.0",
+  "description": "Integreate Vue with Express, Serve Vue app with Express on same Server/Port",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "vue",
+    "nodejs",
+    "express",
+    "sequelize",
+    "rest",
+    "api",
+    "firebase"
+  ],
+  "author": "mohamed",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.8.0",
+    "lodash": "^4.17.21",
+    "nodemon": "^2.0.7"
+  }
+}
