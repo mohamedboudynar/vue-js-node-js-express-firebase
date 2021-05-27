@@ -32,7 +32,7 @@ app.use('/api', myRoutes.routes);
 */
 
 var admin = require("firebase-admin");
-
+var checkIfAuthenticated =require('./middlewares/auth-middleware')
 var serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp({
@@ -43,7 +43,29 @@ admin.initializeApp({
 /*admin.auth().listUsers().then(data=>{
   console.log(data.users)
 })*/
-app.get('/api/userslist', function (req,res) {
+app.get('/api/userslistt',function (req,res) {
+  console.log(req.headers.Authorization)
+})
+
+const getAuthToken=(req, res) => {
+  console.log(req.headers.Authorization)
+
+  /*try {
+    const { authToken } = req.headers.authorization;
+    const userInfo =  admin
+      .auth()
+      .verifyIdToken(authToken);
+    req.authId = userInfo.uid;
+    return next();
+  } catch (e) {
+    return res
+      .status(401)
+      .send({ error: 'You are not authorized to make this request' });
+  }*/
+};
+app.get('/api/userslist',checkIfAuthenticated,function (req,res) {
+  //console.log(req.headers.authorization)
+
   //res.sendFile(path + "index.html");
   /*admin.auth().listUsers().then(data=>{
   // console.log(data.users)
