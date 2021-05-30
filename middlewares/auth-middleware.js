@@ -12,8 +12,17 @@ module.exports = checkIfAuthenticated = (req, res, next) => {
   return res.status(401).send('Unauthorised request')
 }
   admin.auth().verifyIdToken(idToken).then((decodedToken) => {
-   // console.log(decodedToken.uid);
-    return next();
+ if (decodedToken.admin == true) {
+   
+  return next();
+    }
+    throw new Error('unauthorized')
+  //  console.log(decodedToken.uid);
+/*  admin.auth().setCustomUserClaims(decodedToken.uid, {admin: false}).then(() => {
+    // The new custom claims will propagate to the user's ID token the
+    // next time a new one is issued.
+    console.log('admin')
+  });*/
   })
   .catch((error) => {
     return res
