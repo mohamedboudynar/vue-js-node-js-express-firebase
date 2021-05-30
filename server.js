@@ -63,7 +63,61 @@ const getAuthToken=(req, res) => {
       .send({ error: 'You are not authorized to make this request' });
   }*/
 };
+app.get('/api/checkadmin',checkIfAuthenticated,function(req,res){
+//console.log(req.headers.authorization.split(' ')[1])
+res.json('ok')
+})
+
+app.post('/api/setadmin',function(req,res){
+  //console.log(req.headers.authorization.split(' ')[1])
+  admin
+  .auth()
+  .setCustomUserClaims(req.body.id, { admin: false })
+  .then(() => {
+    // The new custom claims will propagate to the user's ID token the
+    // next time a new one is issued.
+  });
+  })
+
+  /*app.get('/api/setadmin',function(req,res){
+    //console.log(req.headers.authorization.split(' ')[1])
+    admin
+    .auth()
+    .setCustomUserClaims("g5ZZlBWAE7V8CrEQindVg6Em3pY2", { admin: true })
+    .then(() => {
+      // The new custom claims will propagate to the user's ID token the
+      // next time a new one is issued.
+    });
+    })*/
+  
+/*app.post('/api/roles',function(req,res){
+  //console.log(req.headers.authorization.split(' ')[1])
+   
+//console.log(req.body)
+
+  admin
+  .auth()
+  .getUser(req.body.id)
+  .then((userRecord) => {
+    // The claims can be accessed on the user record.
+   // console.log(userRecord.customClaims.admin);
+//if(userRecord.customClaims.admin==true){
+//  res.json('admin')
+console.log(userRecord.customClaims.admin)
+
+//}else{
+ // res.json('user')
+
+
+
+//}
+
+  }).catch(()=>{
+  console.log('df')
+  });
+})*/
 app.get('/api/userslist',checkIfAuthenticated,function (req,res) {
+  
   //console.log(req.headers.authorization)
 
   //res.sendFile(path + "index.html");
@@ -142,16 +196,26 @@ app.delete('/api/deleteUser/:id', function (req,res) {
     email: req.body.email,
     password: req.body.password,
     displayName: req.body.name,
-  }).then(()=>{
-    admin.auth().listUsers().then(data=>{
-      // console.log(data.users)
-      //res.data=data.users;
-    //  res.json(data.users);
-    res.json(_.orderBy(data.users, (a)=>new Date([a.metadata.creationTime]),['desc']))
-  
-    //res.json(data.users.metadata)
-    //console.log(data.users[0].metadata.creationTime)
-     })
+    emailVerified:req.body.emailVerified
+  }).then((ress)=>{
+    admin
+    .auth()
+    .setCustomUserClaims(ress.uid, { admin: req.body.role })
+    .then(() => {
+      // The new custom claims will propagate to the user's ID token the
+      // next time a new one is issued.
+      admin.auth().listUsers().then(data=>{
+        // console.log(data.users)
+        //res.data=data.users;
+      //  res.json(data.users);
+      res.json(_.orderBy(data.users, (a)=>new Date([a.metadata.creationTime]),['desc']))
+    
+      //res.json(data.users.metadata)
+      //console.log(data.users[0].metadata.creationTime)
+       });
+    });
+ 
+ 
   }).catch((err)=>{
     console.log('Error adding user:', err);
   
@@ -182,25 +246,43 @@ app.get('/api/user/edit/:id',function (req,res) {
 
 app.put('/api/user/edit/:id',function (req,res) {
   const id = req.params.id;
-  //console.log(id)
+  //console.log(res.password)
   //res.sendFile(path + "index.html");
   admin.auth().updateUser(id,{
    // email: req.body.email,
    displayName: req.body.name,
-    password: req.body.password,
+  password: req.body.password?req.body.password: res.password,
+  emailVerified:req.body.emailVerified
 
-  }).then(() => {
+
+  }).then((ress) => {
+    admin
+    .auth()
+    .setCustomUserClaims(ress.uid, { admin: req.body.role })
+    .then(() => {
+      // The new custom claims will propagate to the user's ID token the
+      // next time a new one is issued.
+      admin.auth().listUsers().then(data=>{
+        // console.log(data.users)
+        //res.data=data.users;
+      //  res.json(data.users);
+      res.json(_.orderBy(data.users, (a)=>new Date([a.metadata.creationTime]),['desc']))
+    
+      //res.json(data.users.metadata)
+      //console.log(data.users[0].metadata.creationTime)
+       });
+    });
     // See the UserRecord reference doc for the contents of userRecord.
     //console.log(`Successfully fetched user data: ${userRecord.toJSON()}`);
-    admin.auth().listUsers().then(data=>{
+  //  admin.auth().listUsers().then(data=>{
       // console.log(data.users)
       //res.data=data.users;
     //  res.json(data.users);
-    res.json(_.orderBy(data.users, (a)=>new Date([a.metadata.creationTime]),['desc']))
+  //  res.json(_.orderBy(data.users, (a)=>new Date([a.metadata.creationTime]),['desc']))
   
     //res.json(data.users.metadata)
     //console.log(data.users[0].metadata.creationTime)
-     })
+  //   })
   }).catch((error) => {
     console.log('Error fetching user data:', error);
   });
